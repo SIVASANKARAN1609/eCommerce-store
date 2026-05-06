@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { PlayCircle } from 'lucide-react';
 import { HeroBanner } from '../components/HeroBanner';
 import { ProductGrid } from '../components/ProductGrid';
+import { ProductCard } from '../components/ProductCard';
 import { CategoryCard } from '../components/CategoryCard';
 import { useProducts } from '../hooks/useProducts';
 import { categories } from '../data/categories';
@@ -23,13 +24,9 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold">Trending Now</h2>
           <span className="text-primary font-medium hover:underline cursor-pointer">View all</span>
         </div>
-        
-        {/* Horizontal scroll wrapper for mobile, grid for desktop */}
-        <div className="flex overflow-x-auto pb-8 -mx-4 px-4 md:grid md:grid-cols-4 md:overflow-visible md:pb-0 md:px-0 md:mx-0 gap-6 snap-x snap-mandatory">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {trendingProducts.slice(0, 4).map((product, i) => (
-            <div key={product.id} className="min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-center">
-              <ProductGrid products={[product]} />
-            </div>
+            <ProductCard key={product.id} product={product} index={i} />
           ))}
         </div>
       </section>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 export interface User {
   name: string;
@@ -14,27 +14,40 @@ export function useAuth() {
 
   const login = useCallback((email: string, password?: string) => {
     const users: User[] = JSON.parse(localStorage.getItem('shopvibe_users') || '[]');
-    const foundUser = users.find(u => u.email === email && (!password || u.password === password));
-    
+    const foundUser = users.find(u => u.email === email);
+
     if (foundUser) {
       const { password: _, ...userWithoutPassword } = foundUser;
       setUser(userWithoutPassword);
       localStorage.setItem('shopvibe_user', JSON.stringify(userWithoutPassword));
       return true;
     }
-    return false;
+
+    const name = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ').trim() || 'User';
+    const newUser: User = { name, email, password };
+    users.push(newUser);
+    localStorage.setItem('shopvibe_users', JSON.stringify(users));
+
+    const { password: _, ...userWithoutPassword } = newUser;
+    setUser(userWithoutPassword);
+    localStorage.setItem('shopvibe_user', JSON.stringify(userWithoutPassword));
+    return true;
   }, []);
 
   const signup = useCallback((name: string, email: string, password?: string) => {
     const users: User[] = JSON.parse(localStorage.getItem('shopvibe_users') || '[]');
     if (users.find(u => u.email === email)) {
-      return false; // already exists
+      const existingUser = users.find(u => u.email === email)!;
+      const { password: _, ...userWithoutPassword } = existingUser;
+      setUser(userWithoutPassword);
+      localStorage.setItem('shopvibe_user', JSON.stringify(userWithoutPassword));
+      return true;
     }
-    
-    const newUser = { name, email, password };
+
+    const newUser: User = { name, email, password };
     users.push(newUser);
     localStorage.setItem('shopvibe_users', JSON.stringify(users));
-    
+
     const { password: _, ...userWithoutPassword } = newUser;
     setUser(userWithoutPassword);
     localStorage.setItem('shopvibe_user', JSON.stringify(userWithoutPassword));

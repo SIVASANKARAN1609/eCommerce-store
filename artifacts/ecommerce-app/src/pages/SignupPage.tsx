@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, Link } from 'wouter';
+import { useLocation, useSearch, Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,6 +27,9 @@ const signupSchema = z.object({
 export default function SignupPage() {
   const { signup } = useAuth();
   const [, setLocation] = useLocation();
+  const search = useSearch();
+  const params = new URLSearchParams(search);
+  const redirect = params.get('redirect') || '/dashboard';
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof signupSchema>>({
@@ -39,13 +42,9 @@ export default function SignupPage() {
   });
 
   function onSubmit(values: z.infer<typeof signupSchema>) {
-    const success = signup(values.name, values.email, values.password);
-    if (success) {
-      toast.success("Account created successfully!");
-      setLocation('/dashboard');
-    } else {
-      toast.error("An account with this email already exists");
-    }
+    signup(values.name, values.email, values.password);
+    toast.success("Account created! Welcome to ShopVibe.");
+    setLocation(redirect);
   }
 
   return (

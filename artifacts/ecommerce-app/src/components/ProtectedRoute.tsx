@@ -8,13 +8,13 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setLocation('/login');
+      setLocation(`/login?redirect=${encodeURIComponent(location)}`);
     }
-  }, [isAuthenticated, setLocation]);
+  }, [isAuthenticated, setLocation, location]);
 
   if (!isAuthenticated) {
     return null;
